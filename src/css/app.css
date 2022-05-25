@@ -1,4 +1,6 @@
 .container {
-    width: 600px;
+    width: 400px;
+    height: 400px;
     margin: 200px auto auto;
+    text-align: center;
 }
