@@ -10,15 +10,39 @@ import Card from '@mui/material/Card';
 import "./../css/app.css";
 
 const SecondPage = (props: any) => {
-    const [cur, setCur] = useState('');
-
+    const [cur, setCur] = useState("");
+    const [conver, setConver] = useState<any>([]);
     const handleChange = (event: SelectChangeEvent) => {
         setCur(event.target.value as string);
+        switch (event.target.value as string) {
+            case "RUB":
+                setConver([
+                    {cur: "EUR", value: 3.2},
+                    {cur: "USD", value: 1}
+                ])
+                break;
+            case "USD":
+                setConver([
+                    {cur: "EUR", value: 3.2},
+                    {cur: "RUB", value: 1}
+                ])
+                break;
+            case "EUR":
+                setConver([
+                    {cur: "RUB", value: 3.2},
+                    {cur: "USD", value: 1}
+                ])
+                break;
+            default:
+                console.log("default")
+                break;
+        }
+        console.log(conver)
     };
     useEffect(() => {
         console.log(props)
     }, [])
-    console.log(cur)
+
     return (
         <>
             <Card className={"container"}>
@@ -38,6 +62,14 @@ const SecondPage = (props: any) => {
                             <MenuItem value={"USD"}>USD</MenuItem>
                         </Select>
                     </FormControl>
+                    {conver.map((item: any, index: any) => {
+                        return <div key={index} style={{
+                            display: "flex",
+                            marginTop: "2rem"
+                        }}>
+                            <p>{item.cur} : {item.value}</p>
+                        </div>
+                    })}
                 </CardContent>
             </Card>
         </>

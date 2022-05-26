@@ -4,38 +4,50 @@ import axios, {AxiosResponse} from "axios";
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 import {Link} from "react-router-dom";
-import SecondPage from "./SecondPage";
 
 import "./../css/app.css";
 
 
 const FirstPage = () => {
+    const pathApi = "https://v6.exchangerate-api.com/v6/19ec0eedc26164eee311cd0f/latest/USD";
     const [arr, setArr] = useState<any>([]);
-    const [inputVal, setInputVal] = useState("");
-    const [mainCur, setMainur] = useState<any>([])
+    let res: string = "";
+
     const changedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
-        setInputVal(event.target.value);
+        const inValue = event.target.value.toLowerCase().split(" ");
+        if (inValue[1] === "rub") {
+            if (inValue[3] === "eur") {
+                // res === " "
+                console.log("rub eur")
+            } else if (inValue[3] === "usd") {
+            }
+        } else if (inValue[1] === "eur") {
+            if (inValue[3] === "usd") {
+
+            } else if (inValue[3] === "rub") {
+            }
+        } else if (inValue[1] === "usd") {
+            if (inValue[3] === "eur") {
+
+            } else if (inValue[3] === "rub") {
+            }
+        }
     }
     useEffect(() => {
-        axios.get("https://v6.exchangerate-api.com/v6/19ec0eedc26164eee311cd0f/latest/USD")
+        axios.get(pathApi)
             .then((res: AxiosResponse) => {
                 console.log(res.data.conversion_rates)
-                setArr(res.data.conversion_rates)
+                setArr([
+                    {name: "usd", usd: res.data.conversion_rates.USD.toFixed(2)},
+                    {name: "eur", eur: res.data.conversion_rates.EUR.toFixed(2)},
+                    {name: "rub", rub: res.data.conversion_rates.RUB.toFixed(2)}
+                ])
                 //    fetching data from api
-            })
-        if (arr != null) {
-            //for getting needed currencies
-            Object.entries(arr).map((key: any) => {
-                if (key[0] === "RUB" || key[0] === "EUR" || key[0] === "USD") {
-                    mainCur.push({type: key[0], val: key[1]})
-                }
-            })
-        }
-        console.log(mainCur)
+            }).catch((error: Error) => {
+            console.log(error)
+        })
     }, [])
-    const inArr: any = inputVal.split(" ")
-    console.log(inArr);
+    // console.log("needed currencies", arr)
     return (
         <>
             <Card className={"container"}>
@@ -47,10 +59,6 @@ const FirstPage = () => {
                                label="e.g. 15 usd in rub"
                                onChange={changedValue}
                                variant="standard"/>
-                    {/*<SecondPage value={mainCur}/>*/}
-                    {inArr && <div style={{marginTop: "2rem"}}>
-                        <p>{inArr[0]} {inArr[1]} = {inArr[3]}</p>
-                    </div>}
                 </CardContent>
             </Card>
         </>
