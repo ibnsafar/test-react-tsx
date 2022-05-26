@@ -8,29 +8,37 @@ import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 
 import "./../css/app.css";
+import axios, {AxiosResponse} from "axios";
 
-const SecondPage = (props: any) => {
+const SecondPage = () => {
     const [cur, setCur] = useState("");
     const [conver, setConver] = useState<any>([]);
+    const [arr, setArr] = useState<any>([]);
+    const pathApi = "https://v6.exchangerate-api.com/v6/19ec0eedc26164eee311cd0f/latest/USD";
+
+    //AGAIN I AM FETCHING DATA FROM SAME API CAUSE
+    //IF I GET DATA FROM PARENT AND REFRESH THIS CHILD
+    //IT WILL RAISE ERROR.
+
     const handleChange = (event: SelectChangeEvent) => {
         setCur(event.target.value as string);
         switch (event.target.value as string) {
             case "RUB":
                 setConver([
-                    {cur: "EUR", value: 3.2},
-                    {cur: "USD", value: 1}
+                    {cur: "EUR", value: (1 / arr[2].rub * arr[1].eur).toFixed(3)},
+                    {cur: "USD", value: (1 / arr[2].rub).toFixed(3)}
                 ])
                 break;
             case "USD":
                 setConver([
-                    {cur: "EUR", value: 3.2},
-                    {cur: "RUB", value: 1}
+                    {cur: "EUR", value: arr[1].eur},
+                    {cur: "RUB", value: arr[2].rub}
                 ])
                 break;
             case "EUR":
                 setConver([
-                    {cur: "RUB", value: 3.2},
-                    {cur: "USD", value: 1}
+                    {cur: "RUB", value: (arr[2].rub / arr[1].eur).toFixed(2)},
+                    {cur: "USD", value: (1 / arr[1].eur).toFixed(2)}
                 ])
                 break;
             default:
@@ -40,9 +48,19 @@ const SecondPage = (props: any) => {
         console.log(conver)
     };
     useEffect(() => {
-        console.log(props)
+        axios.get(pathApi)
+            .then((res: AxiosResponse) => {
+                setArr([
+                    {name: "usd", usd: res.data.conversion_rates.USD.toFixed(2)},
+                    {name: "eur", eur: res.data.conversion_rates.EUR.toFixed(2)},
+                    {name: "rub", rub: res.data.conversion_rates.RUB.toFixed(2)}
+                ])
+                //    fetching data from api
+            }).catch((error: Error) => {
+            console.log(error)
+        })
     }, [])
-
+    console.log(arr)
     return (
         <>
             <Card className={"container"}>

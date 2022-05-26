@@ -4,39 +4,40 @@ import axios, {AxiosResponse} from "axios";
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 import {Link} from "react-router-dom";
+import SecondPage from "./SecondPage";
 
 import "./../css/app.css";
-
 
 const FirstPage = () => {
     const pathApi = "https://v6.exchangerate-api.com/v6/19ec0eedc26164eee311cd0f/latest/USD";
     const [arr, setArr] = useState<any>([]);
-    let res: string = "";
+    const [res, setRes] = useState<any>('');
 
     const changedValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inValue = event.target.value.toLowerCase().split(" ");
         if (inValue[1] === "rub") {
             if (inValue[3] === "eur") {
-                // res === " "
-                console.log("rub eur")
+                setRes((parseInt(inValue[0]) / arr[2].rub * arr[1].eur).toFixed(2))
             } else if (inValue[3] === "usd") {
+                setRes((parseInt(inValue[0]) / arr[2].rub).toFixed(2))
             }
         } else if (inValue[1] === "eur") {
             if (inValue[3] === "usd") {
-
+                setRes((parseInt(inValue[0]) / arr[1].eur).toFixed(2))
             } else if (inValue[3] === "rub") {
+                setRes((parseInt(inValue[0]) / arr[1].eur * arr[2].rub).toFixed(2))
             }
         } else if (inValue[1] === "usd") {
             if (inValue[3] === "eur") {
-
+                setRes((parseInt(inValue[0]) * arr[1].eur).toFixed(2))
             } else if (inValue[3] === "rub") {
+                setRes((parseInt(inValue[0]) * arr[2].rub).toFixed(2))
             }
         }
     }
     useEffect(() => {
         axios.get(pathApi)
             .then((res: AxiosResponse) => {
-                console.log(res.data.conversion_rates)
                 setArr([
                     {name: "usd", usd: res.data.conversion_rates.USD.toFixed(2)},
                     {name: "eur", eur: res.data.conversion_rates.EUR.toFixed(2)},
@@ -47,7 +48,6 @@ const FirstPage = () => {
             console.log(error)
         })
     }, [])
-    // console.log("needed currencies", arr)
     return (
         <>
             <Card className={"container"}>
@@ -59,6 +59,7 @@ const FirstPage = () => {
                                label="e.g. 15 usd in rub"
                                onChange={changedValue}
                                variant="standard"/>
+                    <p style={{marginTop: "2rem"}}>{res}</p>
                 </CardContent>
             </Card>
         </>
